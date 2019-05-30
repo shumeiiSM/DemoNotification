@@ -5,6 +5,8 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -16,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
 
     int requestCode = 123;
     int notificationID = 888;
-    Button btnNotify1, btnNotify2;
+    Button btnNotify1, btnNotify2, btnNotify3;
 
 
     @Override
@@ -26,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
         btnNotify1 = findViewById(R.id.btnNotify1);
         btnNotify2 = findViewById(R.id.btnNotify2);
+        btnNotify3 = findViewById(R.id.btnNotify3);
 
 
         btnNotify1.setOnClickListener(new View.OnClickListener() {
@@ -78,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     NotificationChannel channel = new
                             NotificationChannel("default", "Default Channel",
-                            NotificationManager.IMPORTANCE_DEFAULT);
+                            NotificationManager.IMPORTANCE_HIGH);
 
                     channel.setDescription("This is for default notification");
                     notificationManager.createNotificationChannel(channel);
@@ -108,6 +111,47 @@ public class MainActivity extends AppCompatActivity {
                 builder.setSmallIcon(android.R.drawable.btn_star_big_off);
                 builder.setContentIntent(pIntent);
                 builder.setStyle(new Notification.BigTextStyle().bigText(msg));
+                builder.setAutoCancel(true);
+
+                Notification n = builder.build();
+
+                // This replaces the existing notification with the same ID
+                notificationManager.notify(notificationID, n);
+                finish();
+            }
+        });
+
+        btnNotify3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                NotificationManager notificationManager = (NotificationManager)
+                        getSystemService(NOTIFICATION_SERVICE);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    NotificationChannel channel = new
+                            NotificationChannel("default", "Default Channel",
+                            NotificationManager.IMPORTANCE_HIGH);
+
+                    channel.setDescription("This is for default notification");
+                    notificationManager.createNotificationChannel(channel);
+                }
+
+                Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                PendingIntent pIntent = PendingIntent.getActivity
+                        (MainActivity.this, requestCode,
+                                intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sentosa);
+
+                // Build notification
+                Notification.Builder builder = new Notification.Builder(MainActivity.this, "default");
+                builder.setContentTitle("Welcome to Sentosa!");
+                builder.setContentText("Singapore's premier island getaway");
+                //builder.setLargeIcon(bitmap);
+                builder.setSmallIcon(android.R.drawable.btn_star_big_off);
+                builder.setContentIntent(pIntent);
+                builder.setStyle(new Notification.BigPictureStyle().bigPicture(bitmap));
                 builder.setAutoCancel(true);
 
                 Notification n = builder.build();
